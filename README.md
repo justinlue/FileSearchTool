@@ -12,8 +12,10 @@ ff report --live       # skip the index and scan the drives now (slow, always cu
 ff --reindex           # rebuild the index
 ```
 
-Results print one path per line, best first: exact name, then names starting with
-the query, then names containing it; ties go to the shorter path. Folders end in `\`.
+Results print one path per line, grouped by drive letter from A to Z. Within each
+drive, exact names come first, then names starting with the query, then names
+containing it; ties go to the shorter path. The result limit applies after sorting.
+Folders end in `\`.
 Notices (truncation, stale index, progress) go to stderr, so piping stays clean.
 Exit code is 1 when nothing matches.
 

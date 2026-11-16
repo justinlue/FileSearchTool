@@ -87,17 +87,17 @@ def matches(query, name):
 
 
 def search(db_path, query, limit=50):
-    """Case-insensitive name search, ranked exact > prefix > contains, then shorter path."""
+    """Search by drive letter, then match quality and path length within each drive."""
     q = query.casefold()
     if is_wildcard(q):
-        # Wildcards have no exact/prefix notion; rank by path length alone.
+        # Wildcards have no exact/prefix rank within a drive.
         where, order, q = "name_fold GLOB :q", "", _glob_escape(q)
     else:
         where = "instr(name_fold, :q) > 0"
         order = "CASE WHEN name_fold = :q THEN 0 WHEN substr(name_fold, 1, length(:q)) = :q THEN 1 ELSE 2 END, "
     sql = (
         f"SELECT path, is_dir, COUNT(*) OVER () FROM entries WHERE {where} "
-        f"ORDER BY {order}length(path), path LIMIT :limit"
+        f"ORDER BY substr(path, 1, 2) COLLATE NOCASE, {order}length(path), path LIMIT :limit"
     )
     con = sqlite3.connect(db_path)
     try:

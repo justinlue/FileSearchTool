@@ -44,6 +44,12 @@ def test_ties_go_to_shorter_path(tmp_path):
     assert paths(search(db, "a.txt")) == [r"C:\s\a.txt", r"C:\long\folder\a.txt"]
 
 
+def test_drive_order_precedes_match_rank_and_limit(tmp_path):
+    db = make(tmp_path, entry(r"F:\report"), entry(r"c:\archive\old_report"), entry(r"C:\report"))
+    for query in ("report", "*report"):
+        assert paths(search(db, query, limit=2)) == [r"C:\report", r"c:\archive\old_report"]
+
+
 def test_star_and_question_mark_switch_to_wildcards(tmp_path):
     db = make(
         tmp_path,
